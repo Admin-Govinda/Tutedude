@@ -1,0 +1,6 @@
+flask_mongo_project/
+│── app.py                ← Flask backend
+│── templates/
+│     ├── form.html       ← Frontend form
+│     ├── success.html    ← Success page
+└── requirements.txt      ← Dependencies
