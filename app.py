@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 
+# Create Flask app
 app = Flask(__name__)
 
 # Connect to MongoDB
@@ -8,6 +9,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client["todo_db"]
 collection = db["todo_items"]
 
+# Backend route
 @app.route("/submittodoitem", methods=["POST"])
 def submit_todo_item():
     data = request.get_json()
