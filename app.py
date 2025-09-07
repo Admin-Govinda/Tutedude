@@ -1,44 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, request, jsonify
 from pymongo import MongoClient
 
 app = Flask(__name__)
+client = MongoClient("mongodb://localhost:27017/")
+db = client["todo_db"]
+collection = db["todo_items"]
 
-# Connect to MongoDB Atlas
-client = MongoClient("mongodb+srv://Well2025:Don2025W@cluster0.5z1lm5k.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-db = client["Cluster0"]           # Database name
-collection = db["Well2025"]         # Collection name
+@app.route("/submittodoitem", methods=["POST"])
+def submit_todo_item():
+    data = request.get_json()
+    item_name = data.get("itemName", "").strip()
+    item_description = data.get("itemDescription", "").strip()
 
-# Route for form page
-@app.route("/", methods=["GET", "POST"])
-def form():
-    error = None
-    if request.method == "POST":
-        try:
-            # Get data from form
-            name = request.form.get("name")
-            email = request.form.get("email")
+    if not item_name or not item_description:
+        return jsonify({"status": "error", "message": "Missing fields"}), 400
 
-            # Validate input
-            if not name or not email:
-                error = "Please fill out all fields!"
-                return render_template("form.html", error=error)
+    collection.insert_one({
+        "itemName": item_name,
+        "itemDescription": item_description
+    })
 
-            # Insert into MongoDB
-            collection.insert_one({"name": name, "email": email})
-
-            # Redirect to success page
-            return redirect(url_for("success"))
-
-        except Exception as e:
-            error = f"Error: {str(e)}"
-            return render_template("form.html", error=error)
-
-    return render_template("form.html", error=error)
-
-# Route for success page
-@app.route("/success")
-def success():
-    return render_template("success.html")
+    return jsonify({"status": "success", "message": "Item added successfully!"}), 201
 
 if __name__ == "__main__":
     app.run(debug=True)
