@@ -1,45 +1,38 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <title>To-Do Page</title>
+    <title>To-Do App</title>
 </head>
 <body>
-  <h1>To-Do</h1>
-  <form id="todoForm">
-    <label>Item Name<br/>
-      <input id="itemName" name="itemName" required />
-    </label>
-    <br/><br/>
-    <label>Item Description<br/>
-      <textarea id="itemDescription" name="itemDescription" rows="4"></textarea>
-    </label>
-    <br/><br/>
-    <button type="submit">Submit</button>
-  </form>
+    <h2>Add To-Do Item</h2>
+    <form id="todoForm">
+        <label>Item Name:</label>
+        <input type="text" id="itemName" required><br><br>
 
-  <div id="result"></div>
+        <label>Item Description:</label>
+        <textarea id="itemDescription" required></textarea><br><br>
 
-  <script>
-    document.getElementById('todoForm').addEventListener('submit', async function(e){
-      e.preventDefault();
-      const itemName = document.getElementById('itemName').value;
-      const itemDescription = document.getElementById('itemDescription').value;
+        <button type="submit">Submit</button>
+    </form>
 
-      const resp = await fetch('/submittodoitem', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ itemName, itemDescription })
-      });
+    <p id="result"></p>
 
-      const data = await resp.json();
-      if (resp.ok) {
-        document.getElementById('result').innerText = 'Saved (id: ' + (data.id || '') + ')';
-        document.getElementById('todoForm').reset();
-      } else {
-        document.getElementById('result').innerText = 'Error: ' + (data.error || JSON.stringify(data));
-      }
-    });
-  </script>
+    <script>
+        document.getElementById("todoForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const itemName = document.getElementById("itemName").value;
+            const itemDescription = document.getElementById("itemDescription").value;
+
+            const response = await fetch("/submittodoitem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itemName, itemDescription })
+            });
+
+            const result = await response.json();
+            document.getElementById("result").textContent = result.message;
+        });
+    </script>
 </body>
 </html>
